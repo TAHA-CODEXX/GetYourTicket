@@ -3,11 +3,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import EventsManagement from './pages/admin/EventsManagement';
+import Events from './pages/Events';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <Router>
+      <Navbar />
         <Routes>
+           <Route path="/events" element={<Events />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<Login />} />
           <Route
