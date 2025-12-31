@@ -8,7 +8,9 @@ const EventsManagement = () => {
     const [events, setEvents] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
-    const [uploading, setUploading] = useState(false); // New state for upload status
+    const [uploading, setUploading] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [eventToDelete, setEventToDelete] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -75,6 +77,44 @@ const EventsManagement = () => {
             alert('Erreur lors de la sauvegarde');
         }
     };
+
+    const handleEdit = (event) => {
+        setEditingEvent(event);
+        setFormData({
+            name: event.name,
+            description: event.description,
+            category: event.category,
+            image: event.image,
+            price: event.price.toString(),
+            date: event.date,
+        });
+        setShowModal(true);
+    };
+
+    const handleDelete = async (id) => {
+        setEventToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!eventToDelete) return;
+        try {
+            await deleteEvent(eventToDelete);
+            fetchEvents();
+            setShowDeleteModal(false);
+            setEventToDelete(null);
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            alert('Erreur lors de la suppression');
+            setShowDeleteModal(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setEventToDelete(null);
+    };
+
     const resetForm = () => {
         setFormData({
             name: '',
@@ -84,6 +124,7 @@ const EventsManagement = () => {
             price: '',
             date: '',
         });
+        setEditingEvent(null);
         setShowModal(false);
     };
 
@@ -107,6 +148,62 @@ const EventsManagement = () => {
                         + Nouvel événement
                     </button>
                 </div>
+
+                {/* Events Table */}
+                <div className="card overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-slate-700">
+                                <th className="text-left py-4 px-4 text-gray-300">Image</th>
+                                <th className="text-left py-4 px-4 text-gray-300">Nom</th>
+                                <th className="text-left py-4 px-4 text-gray-300 hidden md:table-cell">Catégorie</th>
+                                <th className="text-left py-4 px-4 text-gray-300 hidden md:table-cell">Prix</th>
+                                <th className="text-left py-4 px-4 text-gray-300 hidden md:table-cell">Date</th>
+                                <th className="text-left py-4 px-4 text-gray-300">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {events.map((event) => (
+                                <tr key={event.id} className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors">
+                                    <td className="py-4 px-4">
+                                        <img src={event.image} alt={event.name} className="w-16 h-16 object-cover rounded-lg" />
+                                    </td>
+                                    <td className="py-4 px-4 text-white font-semibold">{event.name}</td>
+                                    <td className="py-4 px-4 hidden md:table-cell">
+                                        <span className="bg-purple-500/20 text-purple-500 px-3 py-1 rounded-full text-sm">
+                                            {event.category}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-4 text-blue-500 font-bold hidden md:table-cell">{event.price}€</td>
+                                    <td className="py-4 px-4 text-gray-400 hidden md:table-cell">{event.date}</td>
+                                    <td className="py-4 px-4">
+                                        <div className="flex space-x-2">
+                                            <button
+                                                onClick={() => handleEdit(event)}
+                                                className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors"
+                                                title="Modifier"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(event.id)}
+                                                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
+                                                title="Supprimer"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
                 {/* Modal */}
                 {showModal && (
                     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -232,10 +329,39 @@ const EventsManagement = () => {
                         </div>
                     </div>
                 )}
+
+                {/* Delete Confirmation Modal */}
+                {showDeleteModal && (
+                    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                        <div className="card max-w-sm w-full bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-red-500/30 shadow-2xl">
+                            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-500/20 border border-red-500/50 mx-auto mb-4">
+                                <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4v2m0 4v2M6.228 6.228a9 9 0 1012.544 12.544M6.228 6.228L2.5 2.5m9.728 9.728l3.728 3.728m0 0l3.728 3.728M19.5 19.5l-3.728-3.728" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2 text-center">Confirmer la suppression</h3>
+                            <p className="text-gray-300 text-center mb-6">Êtes-vous certain de vouloir supprimer cet événement? Cette action est irréversible.</p>
+                            
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={cancelDelete}
+                                    className="flex-1 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-colors shadow-lg"
+                                >
+                                    Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
 export default EventsManagement;
-
