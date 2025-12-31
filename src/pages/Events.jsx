@@ -68,6 +68,7 @@ const Events = () => {
     };
 
     const handleAddToCart = (event) => {
+        console.log('Dispatching addToCart with:', event);
         dispatch(addToCart(event));
         toast.success(`${event.name} ajouté au panier!`, {
             icon: '🎫',

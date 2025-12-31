@@ -5,13 +5,14 @@ import Dashboard from './pages/admin/Dashboard';
 import EventsManagement from './pages/admin/EventsManagement';
 import Events from './pages/Events';
 import Navbar from './components/Navbar';
-
+import Cart from './pages/Cart';  
 function App() {
   return (
     <Router>
       <Navbar />
         <Routes>
            <Route path="/events" element={<Events />} />
+           <Route path="/cart" element={<Cart />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<Login />} />
           <Route
