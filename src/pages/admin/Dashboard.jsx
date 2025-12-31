@@ -106,7 +106,6 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </Link>
-
                     <Link to="/admin/orders" className="card hover:scale-105 transform transition-all duration-300 group">
                         <div className="flex items-center space-x-4">
                             <div className="bg-purple-500/20 p-4 rounded-lg group-hover:bg-purple-500/30 transition-colors">

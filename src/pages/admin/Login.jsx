@@ -7,6 +7,7 @@ const Login = () => {
         username: '',
         password: '',
     });
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -19,18 +20,41 @@ const Login = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        console.log('Form submitted');
+        console.log('Credentials object:', credentials);
+        console.log('Username length:', credentials.username.length);
+        console.log('Password length:', credentials.password.length);
+
         // Validation
         if (!credentials.username || !credentials.password) {
+            console.log('Validation failed: empty fields');
             toast.error('Veuillez remplir tous les champs');
             return;
         }
 
+        console.log('Attempting login with username:', credentials.username, 'password:', credentials.password);
+
         // Simple authentication
-        if (credentials.username === 'admin' && credentials.password === 'admin123') {
+        const usernameMatch = credentials.username === 'admin';
+        const passwordMatch = credentials.password === 'admin123';
+        
+        console.log('Username match (admin):', usernameMatch);
+        console.log('Password match (admin123):', passwordMatch);
+
+        if (usernameMatch && passwordMatch) {
+            console.log('✓ Login successful, setting adminAuth...');
             localStorage.setItem('adminAuth', 'true');
+            console.log('✓ adminAuth set to:', localStorage.getItem('adminAuth'));
             toast.success('Connexion réussie');
-            navigate('/admin/dashboard');
+            setTimeout(() => {
+                console.log('→ Navigating to dashboard...');
+                navigate('/admin/dashboard');
+            }, 500);
         } else {
+            console.log('✗ Login FAILED - credentials do not match');
+            console.log('Expected: username="admin", password="admin123"');
+            console.log('Got: username="' + credentials.username + '", password="' + credentials.password + '"');
+            setErrorMessage('Identifiants incorrects');
             toast.error('Identifiants incorrects');
         }
     };
@@ -49,6 +73,11 @@ const Login = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                    {errorMessage && (
+                        <div className="bg-red-900/20 border border-red-500/50 text-red-400 px-3 py-2 rounded text-sm">
+                            {errorMessage}
+                        </div>
+                    )}
                     <div>
                         <label className="block text-gray-400 mb-1.5 text-xs font-medium uppercase tracking-wider">Nom d'utilisateur</label>
                         <input
