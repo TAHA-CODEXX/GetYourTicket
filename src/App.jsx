@@ -6,6 +6,7 @@ import EventsManagement from './pages/admin/EventsManagement';
 import Events from './pages/Events';
 import Navbar from './components/Navbar';
 import Cart from './pages/Cart';  
+import OrdersManagement from './pages/admin/OrdersManagement';
 function App() {
   return (
     <Router>
@@ -28,6 +29,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <EventsManagement />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute>
+                <OrdersManagement />
               </ProtectedRoute>
             }
           />
