@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
@@ -7,11 +8,14 @@ import Events from './pages/Events';
 import Navbar from './components/Navbar';
 import Cart from './pages/Cart';  
 import OrdersManagement from './pages/admin/OrdersManagement';
+import Checkout from './pages/Checkout';
 function App() {
   return (
     <Router>
+      <Toaster position="top-right" reverseOrder={false} />
       <Navbar />
         <Routes>
+          <Route path="/checkout" element={<Checkout />} />
            <Route path="/events" element={<Events />} />
            <Route path="/cart" element={<Cart />} />
           {/* Admin Routes */}
