@@ -18,3 +18,10 @@ export default api;
 export const getOrders = () => api.get('/orders');
 export const createOrder = (orderData) => api.post('/orders', orderData);
 
+// Stats
+export const getStats = () => Promise.resolve({ data: stats });
+export const updateStats = (statsData) => {
+    console.log("Mise à jour stats (simulation):", statsData);
+    return Promise.resolve({ data: { ...stats, ...statsData } });
+};
+
