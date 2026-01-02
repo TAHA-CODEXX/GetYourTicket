@@ -1,23 +1,64 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import ThreeScene from './components/ThreeScene';
+
+// User Pages
+import Home from './pages/Home';
+import Events from './pages/Events';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import Contact from './pages/Contact';
+
+// Admin Pages
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import EventsManagement from './pages/admin/EventsManagement';
-import Events from './pages/Events';
-import Navbar from './components/Navbar';
-import Cart from './pages/Cart';  
 import OrdersManagement from './pages/admin/OrdersManagement';
-import Checkout from './pages/Checkout';
+
+import { Toaster } from 'react-hot-toast';
+
+const BackgroundWrapper = ({ children }) => {
+  const location = useLocation();
+  const showThreeScene = ['/', '/events', '/contact'].includes(location.pathname);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-900 relative">
+      {showThreeScene && <ThreeScene />}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: '#1e293b',
+              color: '#fff',
+              border: '1px solid #334155',
+            },
+          }}
+        />
+        <Navbar />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
 function App() {
   return (
     <Router>
-      <Toaster position="top-right" reverseOrder={false} />
-      <Navbar />
+      <BackgroundWrapper>
         <Routes>
+          {/* User Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-           <Route path="/events" element={<Events />} />
-           <Route path="/cart" element={<Cart />} />
+          <Route path="/contact" element={<Contact />} />
+
           {/* Admin Routes */}
           <Route path="/admin/login" element={<Login />} />
           <Route
@@ -36,7 +77,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/admin/orders"
             element={
               <ProtectedRoute>
@@ -45,6 +86,7 @@ function App() {
             }
           />
         </Routes>
+      </BackgroundWrapper>
     </Router>
   );
 }
